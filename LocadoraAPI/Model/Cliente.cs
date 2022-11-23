@@ -5,7 +5,7 @@ namespace LocadoraAPI.Model
 {
     public class Cliente
     {
-        public int Id { get; set; }
+        public int ClienteId { get; set; }
 
         [Required(ErrorMessage = "O campo nome deve ser preenchido.")]
         //[Index("idx_NOME" ,IsUnique = true)]
