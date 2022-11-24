@@ -73,15 +73,37 @@ namespace LocadoraAPI.Controllers
             return NoContent();
         }
 
-        // POST: api/Locacao
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Locacao>> PostLocacao(Locacao locacao)
+        // POST: api/Locacao       
+        [HttpPost("AlugarFilme")]
+        public async Task<ActionResult<Locacao>> AlugarFilme(int clienteId, int filmeId)
         {
-            _context.Locacoes.Add(locacao);
+            var filmeEscolhido = _context.Filmes.Find(filmeId);
+            var cliente = _context.Clientes.Find(clienteId);
+
+            DateTime dataAtual = DateTime.Now;
+
+
+            Locacao novaLocacao = new Locacao();
+            novaLocacao.ClienteId = clienteId;
+            novaLocacao.FilmeId = filmeId;
+            novaLocacao.DataLocacao = dataAtual;
+
+            if(filmeEscolhido.Lancamento == 1)
+            {
+                novaLocacao.DataDevolucao = dataAtual.AddDays(2);
+            }
+            else
+            {
+                novaLocacao.DataDevolucao = dataAtual.AddDays(3);
+            }
+
+            novaLocacao.Cliente = cliente;
+            novaLocacao.Fillme = filmeEscolhido;
+
+            _context.Locacoes.Add(novaLocacao);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetLocacao", new { id = locacao.LocacaoId }, locacao);
+            return Ok(novaLocacao);
         }
 
         // DELETE: api/Locacao/5
