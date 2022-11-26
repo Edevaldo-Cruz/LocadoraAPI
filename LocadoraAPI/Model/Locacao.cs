@@ -9,9 +9,10 @@ namespace LocadoraAPI.Model
         public int FilmeId { get; set; }
         public DateTime DataLocacao { get; set; }
         public DateTime DataDevolucao { get; set; }
+        public bool Devolvido { get; set; }
 
         public virtual Cliente Cliente { get; set; }
-        public virtual Filme Fillme { get; set; }
+        public virtual Filme Filme { get; set; }
 
     }
 }

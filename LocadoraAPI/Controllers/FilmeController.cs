@@ -9,8 +9,7 @@ using LocadoraAPI.Context;
 using LocadoraAPI.Model;
 
 namespace LocadoraAPI.Controllers
-{
-    [Route("api/[controller]")]
+{  
     [ApiController]
     public class FilmeController : ControllerBase
     {
@@ -20,16 +19,14 @@ namespace LocadoraAPI.Controllers
         {
             _context = context;
         }
-
-        // GET: api/Filme
-        [HttpGet]
+        
+        [HttpGet("RetornaTodosFilmes")]
         public async Task<ActionResult<IEnumerable<Filme>>> GetFilmes()
         {
             return await _context.Filmes.ToListAsync();
         }
-
-        // GET: api/Filme/5
-        [HttpGet("{id}")]
+        
+        [HttpGet("RetornaFilmePorId/{id}")]
         public async Task<ActionResult<Filme>> GetFilme(int id)
         {
             var filme = await _context.Filmes.FindAsync(id);
@@ -42,9 +39,8 @@ namespace LocadoraAPI.Controllers
             return filme;
         }
 
-        // PUT: api/Filme/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        
+        [HttpPut("EditarFilme/{id}")]
         public async Task<IActionResult> PutFilme(int id, Filme filme)
         {
             if (id != filme.FilmeId)
@@ -72,10 +68,8 @@ namespace LocadoraAPI.Controllers
 
             return NoContent();
         }
-
-        // POST: api/Filme
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
+        
+        [HttpPost("CadastrarFilme")]
         public async Task<ActionResult<Filme>> PostFilme(Filme filme)
         {
             _context.Filmes.Add(filme);
@@ -83,9 +77,8 @@ namespace LocadoraAPI.Controllers
 
             return CreatedAtAction("GetFilme", new { id = filme.FilmeId }, filme);
         }
-
-        // DELETE: api/Filme/5
-        [HttpDelete("{id}")]
+        
+        [HttpDelete("DeletarFilme/{id}")]
         public async Task<IActionResult> DeleteFilme(int id)
         {
             var filme = await _context.Filmes.FindAsync(id);

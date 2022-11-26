@@ -10,7 +10,7 @@ using LocadoraAPI.Model;
 
 namespace LocadoraAPI.Controllers
 {
-    [Route("api/[controller]")]
+    
     [ApiController]
     public class ClienteController : ControllerBase
     {
@@ -21,15 +21,14 @@ namespace LocadoraAPI.Controllers
             _context = context;
         }
 
-        // GET: api/Cliente
-        [HttpGet]
+        
+        [HttpGet("RetornaTodosClientes")]
         public async Task<ActionResult<IEnumerable<Cliente>>> GetClientes()
         {
             return await _context.Clientes.ToListAsync();
         }
-
-        // GET: api/Cliente/5
-        [HttpGet("{id}")]
+        
+        [HttpGet("RetornaClientePorId/{id}")]
         public async Task<ActionResult<Cliente>> GetCliente(int id)
         {
             var cliente = await _context.Clientes.FindAsync(id);
@@ -42,9 +41,8 @@ namespace LocadoraAPI.Controllers
             return cliente;
         }
 
-        // PUT: api/Cliente/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
+        
+        [HttpPut("EditarCliente/{id}")]
         public async Task<IActionResult> PutCliente(int id, Cliente cliente)
         {
             if (id != cliente.ClienteId)
@@ -86,8 +84,8 @@ namespace LocadoraAPI.Controllers
             return CreatedAtAction("GetCliente", new { id = cliente.ClienteId }, cliente);
         }
 
-        // DELETE: api/Cliente/5
-        [HttpDelete("{id}")]
+        
+        [HttpDelete("DeletarCliente/{id}")]
         public async Task<IActionResult> DeleteCliente(int id)
         {
             var cliente = await _context.Clientes.FindAsync(id);
