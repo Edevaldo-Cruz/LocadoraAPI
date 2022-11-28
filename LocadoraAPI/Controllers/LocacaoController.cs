@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using LocadoraAPI.Context;
 using LocadoraAPI.Model;
+using NuGet.Packaging;
 
 namespace LocadoraAPI.Controllers
 {
@@ -40,33 +41,20 @@ namespace LocadoraAPI.Controllers
             return locacao;
         }
 
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutLocacao(int id, Locacao locacao)
+        [HttpPut("EditaLocacao/{id}")]
+        public async Task<IActionResult> PutLocacao(int id, DateTime DataLocacao, DateTime DataDevolucao, bool Devolvido, Locacao locacao)
         {
-            if (id != locacao.LocacaoId)
-            {
-                return BadRequest();
-            }
 
-            _context.Entry(locacao).State = EntityState.Modified;
+            var locacaoSelecionada = _context.Locacoes.Find(id);            
+            locacaoSelecionada.DataLocacao = locacao.DataLocacao;
+            locacaoSelecionada.DataDevolucao = locacao.DataDevolucao;
+            locacaoSelecionada.Devolvido = locacao.Devolvido;
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!LocacaoExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+            _context.Locacoes.Update(locacaoSelecionada);
+            await _context.SaveChangesAsync();
 
-            return NoContent();
+
+            return Ok(locacaoSelecionada);
         }
 
         [HttpPost("AlugarFilme")]
@@ -114,7 +102,7 @@ namespace LocadoraAPI.Controllers
         }
 
         // DELETE: api/Locacao/5
-        [HttpDelete("{id}")]
+        [HttpDelete("DeletarLocacao/{id}")]
         public async Task<IActionResult> DeleteLocacao(int id)
         {
             var locacao = await _context.Locacoes.FindAsync(id);
@@ -198,7 +186,7 @@ namespace LocadoraAPI.Controllers
                                         && f.DataLocacao > ultimaSemana)
                                     .ToList();
 
-            var lista = filmesAlugados
+            var listaFilmesAlugado = filmesAlugados
                         .GroupBy(x => x.FilmeId)
                         .Where(g => g.Count() >= 1)
                         .OrderByDescending(g => g.Count())
@@ -206,18 +194,41 @@ namespace LocadoraAPI.Controllers
                         .Reverse()
                         .ToList();
 
+            var filmes = _context.Filmes.Select(x => x.FilmeId).ToList();
+            var todosFilmesAlugados = _context.Locacoes.Select(x => x.FilmeId).ToList();
+          
+           var filmesNuncaAlugados = filmes.Except(todosFilmesAlugados).ToList();           
 
             List<Filme> ListaFilme = new List<Filme>();
-            int contatador = 3;
-            foreach (var filme in lista)
+            int contador = 3;
+            foreach (var filme in filmesNuncaAlugados)
             {
-                if(contatador != 0)
+                if(contador != 0)
                 {
                     var filmeAtual = _context.Filmes.Find(filme);
                     ListaFilme.Add(filmeAtual);
-                    contatador--;
+                    contador--;
                 }
-               
+                else
+                {
+                    break;
+                }
+            }
+            if(contador != 0)
+            {
+                foreach (var filme in listaFilmesAlugado)
+                {
+                    if (contador != 0)
+                    {
+                        var filmeAtual = _context.Filmes.Find(filme);
+                        ListaFilme.Add(filmeAtual);
+                        contador--;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
             }
             return Ok(ListaFilme);
         }
